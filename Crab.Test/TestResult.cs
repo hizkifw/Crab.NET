@@ -1,4 +1,3 @@
-
 using Crab.Errors;
 
 namespace Crab.Test;
@@ -8,9 +7,9 @@ public class TestResult
     private IResult<string, Exception> Greet(string input)
     {
         if (string.IsNullOrEmpty(input))
-            return Result<string, Exception>.CreateErr(new ArgumentNullException(nameof(input)));
+            return Result.Err<string, Exception>(new ArgumentNullException(nameof(input)));
 
-        return Result<string, Exception>.CreateOk($"Hello, {input}");
+        return Result.Ok<string, Exception>($"Hello, {input}");
     }
 
     [Fact]
@@ -19,10 +18,10 @@ public class TestResult
         var greetErr = Greet(string.Empty);
         Assert.True(greetErr.IsErr());
         Assert.False(greetErr.IsOk());
-        try { greetErr.Expect("Expected a value"); }
+        try { greetErr.Expect("Expected a value"); Assert.Fail("Should throw"); }
         catch (UnwrapException e) { Assert.Equal("Expected a value", e.Message); }
         Assert.True(greetErr.ExpectErr("Should be error") is ArgumentNullException);
-        try { greetErr.Unwrap(); }
+        try { greetErr.Unwrap(); Assert.Fail("Should throw"); }
         catch (UnwrapException) { }
         Assert.True(greetErr.UnwrapErr() is ArgumentNullException);
         Assert.Equal("fallback", greetErr.UnwrapOr("fallback"));
@@ -52,11 +51,9 @@ public class TestResult
             return "fail";
         }));
 
-        var oks = 0;
-        var errs = 0;
-        greetErr.Inspect(_ => oks++).InspectErr(_ => errs++);
-        Assert.Equal(0, oks);
-        Assert.Equal(1, errs);
+        greetErr
+            .Inspect(_ => Assert.Fail("Should not be called"))
+            .InspectErr(err => Assert.True(err is ArgumentNullException));
 
         var optOk = greetErr.Ok();
         Assert.False(optOk.IsSome());
@@ -66,6 +63,11 @@ public class TestResult
         Assert.True(optErr.IsSome());
         Assert.False(optErr.IsNone());
         Assert.True(optErr.Expect("Expected error") is ArgumentNullException);
+
+        Assert.False(greetErr.TryUnwrap(out var value));
+        Assert.Null(value);
+        Assert.True(greetErr.TryUnwrapErr(out var err));
+        Assert.True(err is ArgumentNullException);
     }
 
     [Fact]
@@ -75,10 +77,10 @@ public class TestResult
         Assert.True(greetOk.IsOk());
         Assert.False(greetOk.IsErr());
         Assert.Equal("Hello, world", greetOk.Expect("Expected a value"));
-        try { greetOk.ExpectErr("Should throw"); }
+        try { greetOk.ExpectErr("Should throw"); Assert.Fail("Should throw"); }
         catch (UnwrapException e) { Assert.Equal("Should throw", e.Message); }
         Assert.Equal("Hello, world", greetOk.Unwrap());
-        try { greetOk.UnwrapErr(); }
+        try { greetOk.UnwrapErr(); Assert.Fail("Should throw"); }
         catch (UnwrapException) { }
         Assert.Equal("Hello, world", greetOk.UnwrapOr("fallback"));
         Assert.Equal("Hello, world", greetOk.UnwrapOrElse((ex) =>
@@ -110,11 +112,9 @@ public class TestResult
             Assert.Equal("Hello, world", value);
         }).Unwrap());
 
-        var oks = 0;
-        var errs = 0;
-        greetOk.Inspect(_ => oks++).InspectErr(_ => errs++);
-        Assert.Equal(1, oks);
-        Assert.Equal(0, errs);
+        greetOk
+            .Inspect(val => Assert.Equal("Hello, world", val))
+            .InspectErr(_ => Assert.Fail("Should not be called"));
 
         var optOk = greetOk.Ok();
         Assert.True(optOk.IsSome());
@@ -124,5 +124,10 @@ public class TestResult
         var optErr = greetOk.Err();
         Assert.False(optErr.IsSome());
         Assert.True(optErr.IsNone());
+
+        Assert.True(greetOk.TryUnwrap(out var value));
+        Assert.Equal("Hello, world", value);
+        Assert.False(greetOk.TryUnwrapErr(out var err));
+        Assert.Null(err);
     }
 }

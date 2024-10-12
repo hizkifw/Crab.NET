@@ -9,6 +9,7 @@ public interface IOption<T>
     T UnwrapOr(T defaultValue);
     T? UnwrapOrDefault();
     T UnwrapOrElse(Func<T> map);
+    bool TryUnwrap(out T value);
 
     IOption<U> Map<U>(Func<T, U> map);
     U MapOr<U>(U defaultValue, Func<T, U> map);

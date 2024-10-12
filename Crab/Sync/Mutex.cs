@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// A lock that wraps a value and allows for safe mutation and access.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Type of the value to be wrapped.</typeparam>
 public class Mutex<T> : IDisposable
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -31,6 +31,27 @@ public class Mutex<T> : IDisposable
     public MutexGuard<T> Lock()
     {
         _semaphore.Wait();
+        return new MutexGuard<T>(this);
+    }
+
+    /// <summary>
+    /// Locks the mutex and returns a guard that releases the lock when disposed.
+    /// </summary>
+    public MutexGuard<T> Lock(CancellationToken ct)
+    {
+        _semaphore.Wait(ct);
+        return new MutexGuard<T>(this);
+    }
+
+    /// <summary>
+    /// Locks the mutex and returns a guard that releases the lock when disposed.
+    /// </summary>
+    /// <exception cref="TimeoutException"></exception>
+    public MutexGuard<T> Lock(TimeSpan timeout)
+    {
+        if (!_semaphore.Wait(timeout))
+            throw new TimeoutException("Mutex lock timed out.");
+
         return new MutexGuard<T>(this);
     }
 

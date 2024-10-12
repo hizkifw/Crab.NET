@@ -1,10 +1,22 @@
 # Crab
 
-Utilities for C#
+A collection of utilities for C#.
 
 ## Features
 
+### `.Then`
+
+Extends the `Task` class with a `.Then` method that allows chaining of tasks.
+
+```csharp
+var result = await Task.FromResult(1)
+    .Then((result) => result + 1)
+    .Then((result) => result * 2);
+```
+
 ### `Mutex<T>`
+
+A mutex that wraps a value and provides a lockable guard for safe access.
 
 ```csharp
 // Initialize the value within the mutex
@@ -34,19 +46,42 @@ var emptyList = mutex.SetAsync(new List<int>());
 
 ### `Result<T, E>`
 
+A result type that can represent either a successful value or an error.
+
 ```csharp
 // Create a method that returns a Result
-public IResult<string, Exception> Greet(string input)
+private IResult<string, Exception> Greet(string input)
 {
     if (string.IsNullOrEmpty(input))
-        return Result<string, Exception>.CreateErr(new ArgumentNullException(nameof(input)));
+        return Result.Err<string, Exception>(new ArgumentNullException(nameof(input)));
 
-    return Result<string, Exception>.CreateOk($"Hello, {input}");
+    return Result.Ok<string, Exception>($"Hello, {input}");
+}
+
+// Use the result
+var result = Greet("world");
+if (result.IsOk)
+{
+    Console.WriteLine(result.Unwrap());
+}
+else
+{
+    Console.WriteLine(result.UnwrapErr().Message);
 }
 ```
 
 ### `Option<T>`
 
-```csharp
+An option type that can represent either a value or nothing.
 
+```csharp
+// Create an option
+var some = Option.Some(123);
+var none = Option.None<int>();
+
+// Use the option
+if (some.TryUnwrap(out var value))
+{
+    Console.WriteLine(value);
+}
 ```

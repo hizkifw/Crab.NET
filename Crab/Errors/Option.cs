@@ -1,5 +1,11 @@
 namespace Crab.Errors;
 
+public static class Option
+{
+    public static IOption<T> Some<T>(T value) => Option<T>.CreateSome(value);
+    public static IOption<T> None<T>() => Option<T>.CreateNone();
+}
+
 public class Option<T> : IOption<T>
 {
     private readonly T? _value;
@@ -17,8 +23,8 @@ public class Option<T> : IOption<T>
         _isSome = false;
     }
 
-    public static IOption<T> CreateSome(T value) => new Option<T>(value);
-    public static IOption<T> CreateNone() => new Option<T>();
+    internal static IOption<T> CreateSome(T value) => new Option<T>(value);
+    internal static IOption<T> CreateNone() => new Option<T>();
 
     public bool IsSome() => _isSome;
     public bool IsNone() => !_isSome;
@@ -57,4 +63,10 @@ public class Option<T> : IOption<T>
 
     public T UnwrapOrElse(Func<T> map) =>
         IsSome() ? _value! : map();
+
+    public bool TryUnwrap(out T value)
+    {
+        value = _value!;
+        return IsSome();
+    }
 }

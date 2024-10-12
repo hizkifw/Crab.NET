@@ -60,14 +60,56 @@ public interface IResult<T, E>
     /// <param name="map">Function to call if the result is Err.</param>
     T UnwrapOrElse(Func<E, T> map);
 
+    /// <summary>
+    /// Attempts to unwrap the Ok value, returning <c>true</c> if successful.
+    /// </summary>
+    bool TryUnwrap(out T value);
+
+    /// <summary>
+    /// Attempts to unwrap the Err value, returning <c>true</c> if successful.
+    /// </summary>
+    bool TryUnwrapErr(out E value);
+
+    /// <summary>
+    /// Maps the Ok value to a new value, returning a new Result.
+    /// </summary>
     IResult<U, E> Map<U>(Func<T, U> map);
+
+    /// <summary>
+    /// Maps the Err value to a new value, returning a new Result.
+    /// </summary>
     IResult<T, F> MapErr<F>(Func<E, F> map);
+
+    /// <summary>
+    /// Maps the Ok value to a new value, returning the new value or a default.
+    /// </summary>
     U MapOr<U>(U defaultValue, Func<T, U> map);
+
+    /// <summary>
+    /// Maps the Ok value to a new value, returning the new value or the result
+    /// of a default function.
+    /// </summary>
     U MapOrElse<U>(Func<E, U> defaultMap, Func<T, U> map);
 
+    /// <summary>
+    /// Inspects the result, calling the action if the result is Ok.
+    /// </summary>
     IResult<T, E> Inspect(Action<T> action);
+
+    /// <summary>
+    /// Inspects the result, calling the action if the result is Err.
+    /// </summary>
     IResult<T, E> InspectErr(Action<E> action);
 
+    /// <summary>
+    /// Transforms the result into an Option. If the result is Ok, the Option
+    /// will be Some, otherwise None.
+    /// </summary>
     IOption<T> Ok();
+
+    /// <summary>
+    /// Transforms the result into an Option. If the result is Err, the Option
+    /// will be Some, otherwise None.
+    /// </summary>
     IOption<E> Err();
 }

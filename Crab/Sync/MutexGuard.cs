@@ -2,6 +2,10 @@ namespace Crab.Sync;
 
 using System;
 
+/// <summary>
+/// A guard that releases a mutex when disposed.
+/// </summary>
+/// <typeparam name="T">The type of the value wrapped by the mutex.</typeparam>
 public struct MutexGuard<T> : IDisposable
 {
     private readonly Mutex<T> _mutex;

@@ -1,6 +1,12 @@
 
 namespace Crab.Errors;
 
+public static class Result
+{
+    public static IResult<T, E> Ok<T, E>(T value) => Result<T, E>.CreateOk(value);
+    public static IResult<T, E> Err<T, E>(E value) => Result<T, E>.CreateErr(value);
+}
+
 public class Result<T, E> : IResult<T, E>
 {
     private readonly T? _okValue;
@@ -21,8 +27,8 @@ public class Result<T, E> : IResult<T, E>
         _isOk = false;
     }
 
-    public static IResult<T, E> CreateOk(T value) => new Result<T, E>(value);
-    public static IResult<T, E> CreateErr(E value) => new Result<T, E>(value);
+    internal static IResult<T, E> CreateOk(T value) => new Result<T, E>(value);
+    internal static IResult<T, E> CreateErr(E value) => new Result<T, E>(value);
 
     public T Expect(string message) =>
         IsOk() ? _okValue! : throw new UnwrapException(message);
@@ -75,9 +81,21 @@ public class Result<T, E> : IResult<T, E>
     public T UnwrapOrElse(Func<E, T> map) =>
         IsOk() ? _okValue! : map(_errValue!);
 
+    public bool TryUnwrap(out T value)
+    {
+        value = _okValue!;
+        return IsOk();
+    }
+
+    public bool TryUnwrapErr(out E value)
+    {
+        value = _errValue!;
+        return IsErr();
+    }
+
     public IOption<T> Ok() =>
-        IsOk() ? Option<T>.CreateSome(_okValue!) : Option<T>.CreateNone();
+        IsOk() ? Option.Some(_okValue!) : Option.None<T>();
 
     public IOption<E> Err() =>
-        IsErr() ? Option<E>.CreateSome(_errValue!) : Option<E>.CreateNone();
+        IsErr() ? Option.Some(_errValue!) : Option.None<E>();
 }
