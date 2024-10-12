@@ -2,6 +2,10 @@
 
 A collection of utilities for C#.
 
+```sh
+dotnet add package Crab.NET
+```
+
 ## Features
 
 ### `.Then`

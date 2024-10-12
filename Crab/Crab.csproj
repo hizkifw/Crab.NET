@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <PackageId>Crab</PackageId>
+    <PackageId>Crab.NET</PackageId>
     <Version>0.0.1</Version>
     <Authors>hizkifw</Authors>
     <Description>Small utilities for C#</Description>
