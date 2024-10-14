@@ -4,6 +4,17 @@ public static class Option
 {
     public static IOption<T> Some<T>(T value) => Option<T>.CreateSome(value);
     public static IOption<T> None<T>() => Option<T>.CreateNone();
+    public static OptionBuilder<T> Builder<T>() => new();
+}
+
+public class OptionBuilder<T>
+{
+    internal OptionBuilder()
+    {
+    }
+
+    public IOption<T> Some(T value) => Option<T>.CreateSome(value);
+    public IOption<T> None() => Option<T>.CreateNone();
 }
 
 public class Option<T> : IOption<T>

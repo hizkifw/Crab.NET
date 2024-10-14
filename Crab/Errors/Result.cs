@@ -1,10 +1,44 @@
 
 namespace Crab.Errors;
 
+/// <summary>
+/// Represents a value that can be either a success (`Ok`) or a failure (`Err`).
+/// </summary>
 public static class Result
 {
+    /// <summary>
+    /// Creates a new `Ok` result.
+    /// </summary>
     public static IResult<T, E> Ok<T, E>(T value) => Result<T, E>.CreateOk(value);
+
+    /// <summary>
+    /// Creates a new `Err` result.
+    /// </summary>
     public static IResult<T, E> Err<T, E>(E value) => Result<T, E>.CreateErr(value);
+
+    /// <summary>
+    /// Creates a new `ResultBuilder` that can be used to create `Ok` and `Err`
+    /// results.
+    /// </summary>
+    public static ResultBuilder<T, E> Builder<T, E>() => new();
+}
+
+/// <summary>
+/// A builder that can be used to create `Ok` and `Err` results.
+/// </summary>
+public class ResultBuilder<T, E>
+{
+    internal ResultBuilder() { }
+
+    /// <summary>
+    /// Creates a new `Ok` result.
+    /// </summary>
+    public IResult<T, E> Ok(T value) => Result<T, E>.CreateOk(value);
+
+    /// <summary>
+    /// Creates a new `Err` result.
+    /// </summary>
+    public IResult<T, E> Err(E value) => Result<T, E>.CreateErr(value);
 }
 
 public class Result<T, E> : IResult<T, E>

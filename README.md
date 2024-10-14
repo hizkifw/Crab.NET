@@ -56,10 +56,12 @@ A result type that can represent either a successful value or an error.
 // Create a method that returns a Result
 private IResult<string, Exception> Greet(string input)
 {
-    if (string.IsNullOrEmpty(input))
-        return Result.Err<string, Exception>(new ArgumentNullException(nameof(input)));
+    var rb = Result.Builder<string, Exception>();
 
-    return Result.Ok<string, Exception>($"Hello, {input}");
+    if (string.IsNullOrEmpty(input))
+        return rb.Err(new ArgumentNullException(nameof(input)));
+
+    return rb.Ok($"Hello, {input}");
 }
 
 // Use the result
@@ -88,4 +90,20 @@ if (some.TryUnwrap(out var value))
 {
     Console.WriteLine(value);
 }
+```
+
+### `IEnumerable.MapFilter`
+
+An extension method for `IEnumerable` that allows mapping and filtering in a
+single pass.
+
+```csharp
+// Map and filter in a single pass
+var result = new[] { 1, 2, 3, 4, 5 }
+    .MapFilter((x) =>
+    {
+        if (x % 2 == 0)
+            return Option.Some(x * 2);
+        return Option.None<int>();
+    });
 ```
