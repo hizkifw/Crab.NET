@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <PackageId>Crab.NET</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>hizkifw</Authors>
     <Description>Small utilities for C#</Description>
     <PackageTags>utilities</PackageTags>
