@@ -1,5 +1,8 @@
 namespace Crab.Concurrency;
 
+/// <summary>
+/// Provides extension methods for working with tasks.
+/// </summary>
 public static class TaskExtensions
 {
     // Task<T> -> U

@@ -2,6 +2,10 @@ using Crab.Concurrency;
 
 namespace Crab.Errors;
 
+/// <summary>
+/// Provides extension methods for transposing <c>Option</c> and <c>Result</c>
+/// types.
+/// </summary>
 public static class TransposeExtensions
 {
     /// <summary>
@@ -25,4 +29,10 @@ public static class TransposeExtensions
             ? Task.FromResult(rb.Err(result.UnwrapErr()))
             : result.Unwrap().Then(rb.Ok);
     }
+
+    /// <summary>
+    /// Flattens an Option of an Option into an Option.
+    /// </summary>
+    public static IOption<T> Flatten<T>(this IOption<IOption<T>> option) =>
+        option.IsNone() ? Option.None<T>() : option.Unwrap();
 }

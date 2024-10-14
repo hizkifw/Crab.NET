@@ -1,22 +1,52 @@
 namespace Crab.Errors;
 
+/// <summary>
+/// A static class that provides methods for creating `Some` and `None` options.
+/// </summary>
 public static class Option
 {
+    /// <summary>
+    /// Creates a new `Some` option.
+    /// </summary>
     public static IOption<T> Some<T>(T value) => Option<T>.CreateSome(value);
+
+    /// <summary>
+    /// Creates a new `None` option.
+    /// </summary>
     public static IOption<T> None<T>() => Option<T>.CreateNone();
+
+    /// <summary>
+    /// Creates a new `OptionBuilder` that can be used to create `Some` and `None`
+    /// options.
+    /// </summary>
     public static OptionBuilder<T> Builder<T>() => new();
 }
 
+/// <summary>
+/// A builder that can be used to create `Some` and `None` options.
+/// </summary>
+/// <typeparam name="T">The type of the value that the option will contain.</typeparam>
 public class OptionBuilder<T>
 {
     internal OptionBuilder()
     {
     }
 
+    /// <summary>
+    /// Creates a new `Some` option.
+    /// </summary>
     public IOption<T> Some(T value) => Option<T>.CreateSome(value);
+
+    /// <summary>
+    /// Creates a new `None` option.
+    /// </summary>
     public IOption<T> None() => Option<T>.CreateNone();
 }
 
+/// <summary>
+/// Represents a value that can be either `Some` or `None`.
+/// </summary>
+/// <typeparam name="T">The type of the value that the option will contain.</typeparam>
 public class Option<T> : IOption<T>
 {
     private readonly T? _value;
